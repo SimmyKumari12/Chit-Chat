@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
@@ -13,9 +14,13 @@ app.use(express.static(path.join(__dirname,"public")));
 app.use(express.urlencoded({extended:true}));
 app.use(methodOverride("_method"));
 
-mongoose.connect("mongodb://127.0.0.1:27017/ChitChat")
+const MONGO_URL =
+    process.env.MONGO_URI || "mongodb://127.0.0.1:27017/ChitChat";
+
+mongoose
+    .connect(MONGO_URL)
     .then(() => console.log("MongoDB connected"))
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 
 //Index Route
 app.get("/chats",async (req,res)=> {
@@ -37,8 +42,13 @@ app.post("/chats",(req,res)=> {
         createdAt:new Date()
     });
 
-    newCh.save().then((res)=>  { console.log("Chat was saved");})
-    .catch((err) => { console.log(err);})
+    newCh.save()
+    .then(() => {
+        console.log("Chat was saved");
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
     res.redirect("/chats");
 })
@@ -68,9 +78,9 @@ app.delete("/chats/:id", async(req,res) => {
         console.log(deletedChat);
         res.redirect("/chats")
     }
-    catch{
+    catch (err) {
         console.log(err);
-        res.status(500).send("Error deleting chat")
+        res.status(500).send("Error deleting chat");
     }
 });
 
@@ -79,6 +89,8 @@ app.get("/", (req, res) => { //UTC FORMAT
 });
 
 
-app.listen(8080, () => {
-    console.log("Server is running on port 8080");
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
