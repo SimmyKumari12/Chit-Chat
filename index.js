@@ -30,7 +30,7 @@ app.get("/chats",async (req,res)=> {
 
 //New route
 app.get("/chats/new",(req,res) => {
-        res.render("newChat.ejs")
+    res.render("newChat.ejs")
 });
 
 app.post("/chats",(req,res)=> {
@@ -85,7 +85,7 @@ app.delete("/chats/:id", async(req,res) => {
 });
 
 app.get("/", (req, res) => { //UTC FORMAT 
-    res.send("Home route Working");
+    res.redirect("/chats");
 });
 
 

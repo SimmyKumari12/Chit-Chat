@@ -1,11 +1,15 @@
+require("dotenv").config();
+
 const mongoose = require("mongoose");
 const Chat = require("./models/chat.js");
 
-mongoose.connect("mongodb://127.0.0.1:27017/ChitChat")
-    .then(() => console.log("MongoDB connected"))
-    .catch(err => console.log(err));
+const MONGO_URL =
+  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/ChitChat";
 
-// const Chat = mongoose.model("Chat", chatSchema);
+mongoose
+  .connect(MONGO_URL)
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log(err));
 
 let chats = [
   {
@@ -46,4 +50,11 @@ let chats = [
   }
 ];
 
-Chat.insertMany(chats);
+Chat.insertMany(chats)
+    .then(() => {
+        console.log("Data inserted");
+        mongoose.connection.close();
+    })
+    .catch((err) => {
+        console.log(err);
+    });
